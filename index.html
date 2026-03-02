@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pour toi, Ophélia 💫</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a96e;
+    --gold-light: #f0d5a0;
+    --rose: #e8b4b8;
+    --deep: #0a0508;
+    --wine: #3d0c11;
+    --cream: #fdf6f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep);
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 20px; height: 20px;
+    background: radial-gradient(circle, var(--gold-light), var(--gold));
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s;
+    mix-blend-mode: screen;
+  }
+  .cursor-trail {
+    position: fixed;
+    width: 8px; height: 8px;
+    background: var(--rose);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    opacity: 0.6;
+    transition: transform 0.3s ease;
+    mix-blend-mode: screen;
+  }
+
+  /* Canvas background */
+  #canvas3d {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+  }
+
+  /* Sections */
+  section {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== HERO ===== */
+  #hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    color: var(--gold);
+    letter-spacing: 0.3em;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.5s forwards;
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 10vw, 8rem);
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 40%, var(--rose) 70%, var(--gold-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.8s forwards;
+    text-shadow: none;
+    position: relative;
+  }
+
+  .hero-name::after {
+    content: 'OPHÉLIA';
+    position: absolute;
+    left: 0; top: 0;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: blur(30px);
+    opacity: 0.3;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(1rem, 3vw, 1.8rem);
+    color: var(--rose);
+    letter-spacing: 0.15em;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.1s forwards;
+    margin-top: 0.5rem;
+  }
+
+  .hero-divider {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 2rem auto;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.4s forwards;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Dancing Script', cursive;
+    color: var(--gold);
+    font-size: 1rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 2s forwards, pulse 2s ease 3s infinite;
+    letter-spacing: 0.2em;
+  }
+
+  /* ===== FLOATING HEARTS ===== */
+  .hearts-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+  }
+  .heart {
+    position: absolute;
+    bottom: -50px;
+    font-size: 1.5rem;
+    animation: floatHeart linear infinite;
+    opacity: 0;
+  }
+
+  /* ===== SECTIONS ===== */
+  .section-inner {
+    max-width: 800px;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .section-tag {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.2rem;
+    color: var(--gold);
+    letter-spacing: 0.3em;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-style: italic;
+    color: var(--gold-light);
+    margin-bottom: 2rem;
+    line-height: 1.2;
+  }
+
+  .section-text {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    line-height: 1.9;
+    color: rgba(253, 246, 240, 0.85);
+    font-weight: 300;
+  }
+
+  /* ===== 3D CARD ===== */
+  .card-3d-container {
+    perspective: 1000px;
+    margin: 3rem auto;
+  }
+
+  .card-3d {
+    background: linear-gradient(135deg, rgba(61,12,17,0.9), rgba(20,5,8,0.95));
+    border: 1px solid rgba(201, 169, 110, 0.3);
+    border-radius: 20px;
+    padding: 3rem 2.5rem;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(201,169,110,0.2);
+  }
+
+  .card-3d::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 30%, rgba(201,169,110,0.08), transparent 60%);
+    pointer-events: none;
+  }
+
+  .card-3d-glow {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 20px;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(201,169,110,0.15), transparent 60%);
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  /* ===== REASONS GRID ===== */
+  .reasons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .reason-card {
+    background: rgba(61,12,17,0.5);
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .reason-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    transition: left 0.5s;
+  }
+
+  .reason-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(201,169,110,0.6);
+    box-shadow: 0 20px 60px rgba(201,169,110,0.15);
+  }
+
+  .reason-card:hover::before { left: 100%; }
+
+  .reason-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .reason-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    margin-bottom: 0.5rem;
+    font-style: italic;
+  }
+
+  .reason-text {
+    font-size: 0.9rem;
+    color: rgba(253,246,240,0.7);
+    line-height: 1.7;
+  }
+
+  /* ===== BRACELET SECTION ===== */
+  .bracelet-visual {
+    width: 200px;
+    height: 200px;
+    margin: 2rem auto;
+    position: relative;
+  }
+
+  .bracelet-ring {
+    width: 160px;
+    height: 160px;
+    border: 8px solid var(--gold);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 30px rgba(201,169,110,0.4), inset 0 0 20px rgba(201,169,110,0.1);
+    animation: rotateBracelet 8s linear infinite;
+  }
+
+  .bracelet-letter {
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gold);
+    transform-origin: 80px 80px;
+  }
+
+  /* ===== PROMISE SECTION ===== */
+  #promises {
+    background: radial-gradient(ellipse at center, rgba(61,12,17,0.6), transparent 70%);
+  }
+
+  .promise-list {
+    list-style: none;
+    margin-top: 2.5rem;
+    text-align: left;
+  }
+
+  .promise-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(201,169,110,0.1);
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    line-height: 1.7;
+    color: rgba(253,246,240,0.85);
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.5s, transform 0.5s;
+  }
+
+  .promise-list li.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .promise-list li::before {
+    content: '✦';
+    color: var(--gold);
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    flex-shrink: 0;
+  }
+
+  /* ===== FINAL MESSAGE ===== */
+  #final {
+    text-align: center;
+  }
+
+  .signature {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2rem, 6vw, 4rem);
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--rose));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-top: 2rem;
+  }
+
+  .heart-beat {
+    display: inline-block;
+    font-size: 3rem;
+    animation: heartBeat 1.5s ease infinite;
+  }
+
+  /* ===== DIVIDER ORNAMENT ===== */
+  .ornament {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.5rem;
+    letter-spacing: 1rem;
+    margin: 1rem 0;
+    opacity: 0.6;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes floatHeart {
+    0% { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.5); }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.4; }
+    100% { opacity: 0; transform: translateY(-100vh) rotate(360deg) scale(1.5); }
+  }
+
+  @keyframes rotateBracelet {
+    from { transform: translate(-50%, -50%) rotateY(0deg); }
+    to { transform: translate(-50%, -50%) rotateY(360deg); }
+  }
+
+  @keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    14% { transform: scale(1.3); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.3); }
+    70% { transform: scale(1); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stars overlay */
+  .stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur, 3s) ease infinite var(--delay, 0s);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.5); }
+  }
+
+  /* Noise texture overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<div class="stars" id="stars"></div>
+
+<div class="hearts-container" id="hearts"></div>
+
+<canvas id="canvas3d"></canvas>
+
+<section id="hero">
+  <div>
+    <p class="hero-eyebrow">✦ Bien plus qu'un message ✦</p>
+    <h1 class="hero-name">OPHÉLIA</h1>
+    <p class="hero-subtitle">Imane Kèmi · MYEHOUENOU</p>
+    <div class="hero-divider"></div>
+    <p class="hero-eyebrow" style="animation-delay:1.7s; font-size:1.1rem; opacity:0">
+      Parce que ma vision pour nous est éternelle.
+    </p>
+  </div>
+  <div class="scroll-hint">↓ Ma déclaration se trouve en bas ↓</div>
+</section>
+
+<section id="qui-tu-es">
+  <div class="section-inner reveal">
+    <span class="section-tag">✦ Ma Vision ✦</span>
+    <h2 class="section-title">Je ne te vois pas comme une amie.</h2>
+    <div class="ornament">· · ·</div>
+
+    <div class="card-3d-container">
+      <div class="card-3d" id="card3d">
+        <div class="card-3d-glow" id="cardGlow"></div>
+        <p class="section-text">
+          L'amitié est un mot trop petit pour ce que je ressens. 
+          Un homme qui bâtit son avenir ne cherche pas une distraction, il cherche son alliée, sa reine, sa moitié. 
+          Chaque ligne de code de ce site, chaque effort que je fournis, c'est pour nous offrir un futur à la hauteur de tes rêves.<br><br>
+          <em style="color:var(--gold-light); font-size:1.2em;">"Tu es la femme que je veux à mes côtés pour la vie."</em>
+        </p>
+      </div>
+    </div>
+
+    <div class="reasons-grid">
+      <div class="reason-card">
+        <span class="reason-icon">💍</span>
+        <div class="reason-title">Mon Épouse</div>
+        <div class="reason-text">Je ne cherche pas une relation passagère. Je vois en toi la mère de mes enfants et la gardienne de notre foyer.</div>
+      </div>
+      <div class="reason-card">
+        <span class="reason-icon">👑</span>
+        <div class="reason-title">Ma Reine</div>
+        <div class="reason-text">Ta dignité et ta force m'inspirent à devenir la meilleure version de moi-même chaque jour.</div>
+      </div>
+      <div class="reason-card">
+        <span class="reason-icon">💫</span>
+        <div class="reason-title">Mon Alliée</div>
+        <div class="reason-text">Dans mes projets, dans mes succès comme dans mes défis, c'est ta main que je veux tenir.</div>
+      </div>
+      <div class="reason-card">
+        <span class="reason-icon">🏛️</span>
+        <div class="reason-title">Notre Futur</div>
+        <div class="reason-text">Je construis pour nous. Ce site est la première pierre de l'empire que je veux bâtir avec toi.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="bracelet-section">
+  <div class="section-inner reveal">
+    <span class="section-tag">✦ Le symbole de notre lien ✦</span>
+    <h2 class="section-title">Plus qu'un cadeau, une promesse.</h2>
+    <div class="ornament">· · ·</div>
+
+    <div class="bracelet-visual" id="braceletVisual">
+      <div class="bracelet-ring"></div>
+    </div>
+
+    <p class="section-text">
+      Ce bracelet que tu m'as offert est le témoin silencieux de notre histoire. 
+      Il me rappelle que même dans le silence, nos cœurs se parlent. 
+      Je le porte comme un rappel constant de la femme exceptionnelle que tu es.
+      <br><br>
+      <em style="color: var(--rose);">Bientôt, j'espère remplacer ce symbole par une alliance.</em>
+    </p>
+  </div>
+</section>
+
+<section id="promises">
+  <div class="section-inner reveal">
+    <span class="section-tag">✦ Mes engagements de futur mari ✦</span>
+    <h2 class="section-title">Devant toi, je m'engage.</h2>
+    <div class="ornament">· · ·</div>
+
+    <ul class="promise-list" id="promiseList">
+      <li>Je te promets d'être le roc sur lequel tu pourras toujours t'appuyer, peu importe les tempêtes.</li>
+      <li>Je te promets une fidélité et une honnêteté sans faille, car tu es ma seule priorité.</li>
+      <li>Je te promets de respecter ton ambition et de soutenir tes études à Perm comme si c'étaient les miennes.</li>
+      <li>Je te promets de ne jamais laisser le silence s'installer entre nous, car la communication est notre force.</li>
+      <li>Je te promets de travailler sans relâche pour que tu ne manques jamais de rien, ni d'amour, ni de confort.</li>
+      <li>Je te promets de te demander ta main, officiellement, devant nos familles, le moment venu.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="pardon">
+  <div class="section-inner reveal">
+    <span class="section-tag">✦ La maturité de l'homme ✦</span>
+    <h2 class="section-title">Réparer le passé pour construire le futur.</h2>
+    <div class="ornament">· · ·</div>
+
+    <div class="card-3d-container">
+      <div class="card-3d">
+        <div class="card-3d-glow"></div>
+        <p class="section-text">
+          L'homme que j'étais au collège ne mérite pas la femme que tu es devenue. 
+          Mais l'homme que je suis aujourd'hui fera tout pour honorer celle que tu seras demain. 
+          Pardonne mes erreurs passées, car elles m'ont appris la valeur de ta présence.
+          <br><br>
+          <em style="color: var(--gold-light);">
+            "Je demande ta main, Ophélia. Je veux que tu sois ma femme, pour l'éternité."
+          </em>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="final">
+  <div class="section-inner reveal">
+    <span class="section-tag">✦ Ma Question Finale ✦</span>
+    <h2 class="section-title">Ophélia, veux-tu devenir ma femme ?</h2>
+    <div class="ornament">· · ·</div>
+
+    <p class="section-text">
+      Je ne cherche pas une réponse pressée par l'émotion. 
+      Je veux que tu saches que ma proposition est ancrée dans le roc. 
+      Je suis prêt à attendre, à bâtir et à te prouver chaque jour 
+      que ma place est à tes côtés, et la tienne dans mon cœur.
+      <br><br>
+      <strong style="color: var(--gold-light);">Tu es mon présent, et je prie pour que tu sois mon futur.</strong>
+    </p>
+
+    <div style="margin: 3rem 0">
+      <span class="heart-beat">❤️</span>
+    </div>
+
+    <p class="signature">Ton futur mari, Grandel</p>
+
+    <div class="hero-divider" style="opacity:1; margin-top: 2rem;"></div>
+
+    <p style="font-family:'Dancing Script',cursive; color:var(--gold); font-size:1.2rem; margin-top:1.5rem; letter-spacing:0.1em;">
+      MYEHOUENOU Ophélia Imane Kèmi · Ma Reine éternelle 🌹
+    </p>
+  </div>
+</section>
+
+<script>
+// (Le reste du script JavaScript reste strictement identique à ton code original pour préserver toutes les animations)
+// ===== CURSOR =====
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursorTrail');
+let mx = 0, my = 0, tx = 0, ty = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+setInterval(() => {
+  tx += (mx - tx) * 0.15;
+  ty += (my - ty) * 0.15;
+  trail.style.left = tx + 'px';
+  trail.style.top = ty + 'px';
+}, 16);
+
+// ===== STARS =====
+const starsContainer = document.getElementById('stars');
+for (let i = 0; i < 120; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  star.style.cssText = `
+    left: ${Math.random() * 100}%;
+    top: ${Math.random() * 100}%;
+    --dur: ${2 + Math.random() * 4}s;
+    --delay: ${Math.random() * 5}s;
+    width: ${Math.random() > 0.8 ? 3 : 2}px;
+    height: ${Math.random() > 0.8 ? 3 : 2}px;
+    opacity: ${0.1 + Math.random() * 0.5};
+  `;
+  starsContainer.appendChild(star);
+}
+
+// ===== CANVAS 3D PARTICLES =====
+const canvas = document.getElementById('canvas3d');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+for (let i = 0; i < 80; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    z: Math.random() * 1000,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    vz: -0.5 - Math.random() * 0.5,
+    size: 1 + Math.random() * 2,
+    color: Math.random() > 0.5 ? '#c9a96e' : '#e8b4b8',
+    alpha: 0.3 + Math.random() * 0.7
+  });
+}
+
+function projectParticle(p) {
+  const fov = 500;
+  const scale = fov / (fov + p.z);
+  return {
+    x: (p.x - canvas.width / 2) * scale + canvas.width / 2,
+    y: (p.y - canvas.height / 2) * scale + canvas.height / 2,
+    scale
+  };
+}
+
+let mouseX = canvas.width / 2, mouseY = canvas.height / 2;
+document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+function animateCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const grad = ctx.createRadialGradient(
+    canvas.width/2, canvas.height/2, 0,
+    canvas.width/2, canvas.height/2, canvas.width * 0.8
+  );
+  grad.addColorStop(0, 'rgba(61,12,17,0.3)');
+  grad.addColorStop(0.5, 'rgba(20,5,8,0.5)');
+  grad.addColorStop(1, 'rgba(10,5,8,0.8)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const dx = (mouseX - canvas.width / 2) * 0.0001;
+  const dy = (mouseY - canvas.height / 2) * 0.0001;
+
+  particles.forEach(p => {
+    p.z += p.vz;
+    p.x += p.vx + dx * p.z;
+    p.y += p.vy + dy * p.z;
+
+    if (p.z < -400) { p.z = 800; p.x = Math.random() * canvas.width; p.y = Math.random() * canvas.height; }
+    if (p.z > 800) p.z = -400;
+
+    const proj = projectParticle(p);
+    const size = p.size * proj.scale * 2;
+    const alpha = p.alpha * proj.scale;
+
+    ctx.beginPath();
+    ctx.arc(proj.x, proj.y, Math.max(0.1, size), 0, Math.PI * 2);
+    ctx.fillStyle = p.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+    ctx.fill();
+
+    const glow = ctx.createRadialGradient(proj.x, proj.y, 0, proj.x, proj.y, size * 3);
+    glow.addColorStop(0, p.color + '40');
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(proj.x, proj.y, size * 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const pi = projectParticle(particles[i]);
+      const pj = projectParticle(particles[j]);
+      const dist = Math.hypot(pi.x - pj.x, pi.y - pj.y);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(201,169,110,${0.08 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(pi.x, pi.y);
+        ctx.lineTo(pj.x, pj.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  requestAnimationFrame(animateCanvas);
+}
+animateCanvas();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+const heartsContainer = document.getElementById('hearts');
+const heartEmojis = ['❤️', '💖', '💕', '✨', '🌹', '💫', '🌸'];
+function createHeart() {
+  const heart = document.createElement('div');
+  heart.className = 'heart';
+  heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+  heart.style.cssText = `
+    left: ${Math.random() * 100}vw;
+    font-size: ${0.8 + Math.random() * 1.5}rem;
+    animation-duration: ${6 + Math.random() * 8}s;
+    animation-delay: ${Math.random() * 3}s;
+  `;
+  heartsContainer.appendChild(heart);
+  setTimeout(() => heart.remove(), 14000);
+}
+setInterval(createHeart, 1500);
+
+const card = document.getElementById('card3d');
+const cardGlow = document.getElementById('cardGlow');
+if (card) {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rotX = (y - cy) / cy * -10;
+    const rotY = (x - cx) / cx * 10;
+    card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    if (cardGlow) {
+      cardGlow.style.setProperty('--mx', `${(x / rect.width) * 100}%`);
+      cardGlow.style.setProperty('--my', `${(y / rect.height) * 100}%`);
+    }
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'rotateX(0) rotateY(0)';
+  });
+}
+
+const braceletVisual = document.getElementById('braceletVisual');
+if (braceletVisual) {
+  const name = 'GRANDEL';
+  const radius = 80;
+  name.split('').forEach((letter, i) => {
+    const angle = (i / name.length) * 360;
+    const rad = (angle - 90) * (Math.PI / 180);
+    const x = radius * Math.cos(rad) + 80;
+    const y = radius * Math.sin(rad) + 80;
+    const span = document.createElement('div');
+    span.style.cssText = `
+      position: absolute;
+      left: ${x}px; top: ${y}px;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #c9a96e;
+      transform: translate(-50%, -50%) rotate(${angle}deg);
+      text-shadow: 0 0 10px rgba(201,169,110,0.8);
+    `;
+    span.textContent = letter;
+    braceletVisual.appendChild(span);
+  });
+}
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+const promises = document.querySelectorAll('#promiseList li');
+const promiseObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      promises.forEach((li, i) => {
+        setTimeout(() => li.classList.add('visible'), i * 200);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+const promiseList = document.getElementById('promiseList');
+if (promiseList) promiseObserver.observe(promiseList);
+</script>
+</body>
+</html>
