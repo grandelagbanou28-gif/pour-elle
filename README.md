@@ -44,4 +44,4 @@ Droit de modification : Seule l'évolution de notre relation pourra en modifier 
 Droit de diffusion : À la discrétion de la destinataire.
 
 🥷 Note du Développeur (Mamba Mentality)
-Ce dépôt est la preuve que le travail acharné (le site e-commerce) et l'amour vrai ne sont pas opposés. Ils se nourrissent l'un l'autre. Un homme de valeur construit son empire pour y accueillir sa reine.
+Ce dépôt est la preuve que le travail acharné (le site e-commerce) et l'amour vrai ne sont pas opposés. Ils se nourrissent l'un l'autre. Un homme de valeur construit son empire pour y accueillir sa reine.# pour-elle
